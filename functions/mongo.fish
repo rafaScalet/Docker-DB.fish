@@ -16,7 +16,7 @@ function mongo
     echo "stopping mongo"
     docker stop mongo > /dev/null
   else
-    echo "starting mongo on port 3306"
+    echo "starting mongo on port 22017"
     docker start mongo > /dev/null
   end
 end
