@@ -12,7 +12,7 @@ function postgres
       -d postgres > /dev/null
     echo "postgres container created"
 
-    set -Ux PG_CONNECTION "pg://$PG_USER:$PG_PASS@localhost:$PG_PORT/?sslmode=disable"
+    set -Ux PG_CONNECTION "postgres://$PG_USER:$PG_PASS@localhost:$PG_PORT/$PG_USER"
     echo "PG_CONNECTION: $PG_CONNECTION"
     return
   end
@@ -29,7 +29,7 @@ function postgres
     echo "starting postgres on port 5432"
     docker start postgres > /dev/null
 
-    set -Ux PG_CONNECTION "pg://$PG_USER:$PG_PASS@localhost:$PG_PORT/?sslmode=disable"
+    set -Ux PG_CONNECTION "postgres://$PG_USER:$PG_PASS@localhost:$PG_PORT/$PG_USER"
     echo "PG_CONNECTION: $PG_CONNECTION"
   end
 end
