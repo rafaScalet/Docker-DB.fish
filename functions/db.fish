@@ -5,13 +5,27 @@ function db --argument-names database --description "Run/start/stop Docker conta
     echo "Docker isn't installed, follow these steps to install:"
     echo
     echo "$MARKER install docker with "(set_color magenta)"apt, pacman, zypper"(set_color normal)" or "(set_color magenta)"dnf"(set_color normal)
-    echo "$MARKER add user to docker group: "(set_color magenta)"sudo usermod -aG docker \$USER"(set_color normal)
+    echo "$MARKER add user to docker group: "(set_color magenta)"sudo usermod -aG docker; and newgrp docker"(set_color normal)
     echo "$MARKER initialize docker service: "(set_color magenta)"sudo systemctl enable --now docker"(set_color normal)
     return 1
   end
 
+  if not id -nG | grep -qw docker
+    echo "You are not into the docker group, run these to append your user:"
+    echo
+    echo "sudo usermod -aG docker; and newgrp docker"
+    return 1
+  end
+
+  if not systemctl is-active --quiet docker
+    echo "Docker service is not enable yet, run these to enable the service in boot:"
+    echo
+    echo "sudo systemctl enable --now docker"
+    return 1
+  end
+
   switch $database
-    case "postgres" "pg"
+    case "postgres"
       set -l PG_USER postgres
       set -l PG_PASS docker
       set -l PG_PORT 5432
@@ -51,7 +65,7 @@ function db --argument-names database --description "Run/start/stop Docker conta
         echo (set_color green)"Port: "(set_color normal)$PG_PORT
         echo (set_color yellow)"Conn: "(set_color normal)"postgres://$PG_USER:$PG_PASS@localhost:$PG_PORT/$PG_DB"
       end
-    case "mariadb" "maria"
+    case "maria"
       set -l MARIA_DB my_mariadb_database
       set -l MARIA_USER maria
       set -l MARIA_PASS docker
@@ -97,7 +111,7 @@ function db --argument-names database --description "Run/start/stop Docker conta
         echo (set_color yellow)"Conn: "(set_color normal)"mysql://$MARIA_USER:$MARIA_PASS@localhost:$MARIA_PORT/$MARIA_DB"
         echo (set_color blue)"Root Conn: "(set_color normal)"mysql://root:$MARIA_ROOT_PASS@localhost:$MARIA_PORT/$MARIA_DB"
       end
-    case "mongodb" "mongo"
+    case "mongo"
       set -l MONGO_USER mongo
       set -l MONGO_PASS docker
       set -l MONGO_DB my_mongo_database
@@ -186,9 +200,9 @@ function db --argument-names database --description "Run/start/stop Docker conta
     case "" "help" "-h" "--help"
       echo "Usage: db <database>. Available options:"
       echo
-      echo "$MARKER postgres/pg"
-      echo "$MARKER mariadb/maria"
-      echo "$MARKER mongodb/mongo"
+      echo "$MARKER postgres"
+      echo "$MARKER maria"
+      echo "$MARKER mongo"
       echo "$MARKER mysql"
     case "*"
       echo "Unknown database: $database"
