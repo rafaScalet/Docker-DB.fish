@@ -28,93 +28,9 @@ function db --argument-names database --description "Run/start/stop Docker conta
     case "postgres"
       __db_postgres
     case "maria"
-      set -l MARIA_DB my_mariadb_database
-      set -l MARIA_USER maria
-      set -l MARIA_PASS docker
-      set -l MARIA_ROOT_PASS root
-      set -l MARIA_PORT 3306
-
-      if not docker ps -a --format "{{.Names}}" | grep -q "mariadb"
-        docker run --name mariadb\
-          -e MARIADB_ROOT_PASSWORD=$MARIA_ROOT_PASS\
-          -e MARIADB_USER=$MARIA_USER\
-          -e MARIADB_PASSWORD=$MARIA_PASS\
-          -e MARIADB_DATABASE=$MARIA_DB\
-          -p $MARIA_PORT:3306\
-          -v mariadb-data:/var/lib/mysql\
-          -d mariadb > /dev/null
-
-        echo "mariadb container created:"
-        echo
-        echo (set_color black)"Db: "(set_color normal)$MARIA_DB
-        echo (set_color cyan)"User: "(set_color normal)$MARIA_USER
-        echo (set_color red)"Pass: "(set_color normal)$MARIA_PASS
-        echo (set_color magenta)"Root Pass: "(set_color normal)$MARIA_ROOT_PASS
-        echo (set_color green)"Port: "(set_color normal)$MARIA_PORT
-        echo (set_color yellow)"Conn: "(set_color normal)"mysql://$MARIA_USER:$MARIA_PASS@localhost:$MARIA_PORT/$MARIA_DB"
-        echo (set_color blue)"Root Conn: "(set_color normal)"mysql://root:$MARIA_ROOT_PASS@localhost:$MARIA_PORT/$MARIA_DB"
-        return
-      end
-
-      set -l mariadb_status (docker inspect --format="{{.State.Running}}" mariadb)
-
-      if test "$mariadb_status" = "true"
-        docker stop mariadb > /dev/null
-        echo "mariadb container stopped"
-      else
-        docker start mariadb > /dev/null
-        echo "mariadb container started:"
-        echo
-        echo (set_color black)"Db: "(set_color normal)$MARIA_DB
-        echo (set_color cyan)"User: "(set_color normal)$MARIA_USER
-        echo (set_color red)"Pass: "(set_color normal)$MARIA_PASS
-        echo (set_color magenta)"Root Pass: "(set_color normal)$MARIA_ROOT_PASS
-        echo (set_color green)"Port: "(set_color normal)$MARIA_PORT
-        echo (set_color yellow)"Conn: "(set_color normal)"mysql://$MARIA_USER:$MARIA_PASS@localhost:$MARIA_PORT/$MARIA_DB"
-        echo (set_color blue)"Root Conn: "(set_color normal)"mysql://root:$MARIA_ROOT_PASS@localhost:$MARIA_PORT/$MARIA_DB"
-      end
+      __db_maria
     case "mongo"
-      set -l MONGO_USER mongo
-      set -l MONGO_PASS docker
-      set -l MONGO_DB my_mongo_database
-      set -l MONGO_PORT 27017
-
-      if not docker ps -a --format "{{.Names}}" | grep -q "mongo"
-        docker run --name mongo\
-          -e MONGO_INITDB_ROOT_USERNAME=$MONGO_USER\
-          -e MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASS\
-          -e MONGO_INITDB_DATABASE=$MONGO_DB\
-          -p $MONGO_PORT:27017\
-          -v mongo-data:/etc/mongo\
-          -d mongo > /dev/null
-
-        echo "mongo container created:"
-        echo
-        echo (set_color black)"Db: "(set_color normal)$MONGO_DB
-        echo (set_color cyan)"User: "(set_color normal)$MONGO_USER
-        echo (set_color red)"Pass: "(set_color normal)$MONGO_PASS
-        echo (set_color green)"Port: "(set_color normal)$MONGO_PORT
-        echo (set_color yellow)"Conn: "(set_color normal)"mongo://localhost:$MONGO_PORT/$MONGO_DB"
-        echo (set_color magenta)"Auth Conn: "(set_color normal)"mongo://$MONGO_USER:$MONGO_PASS@localhost:$MONGO_PORT/$MONGO_DB"
-        return
-      end
-
-      set -l mongo_status (docker inspect --format="{{.State.Running}}" mongo)
-
-      if test "$mongo_status" = "true"
-        docker stop mongo > /dev/null
-        echo "mongo container stopped"
-      else
-        docker start mongo > /dev/null
-        echo "mongo container started:"
-        echo
-        echo (set_color black)"Db: "(set_color normal)$MONGO_DB
-        echo (set_color cyan)"User: "(set_color normal)$MONGO_USER
-        echo (set_color red)"Pass: "(set_color normal)$MONGO_PASS
-        echo (set_color green)"Port: "(set_color normal)$MONGO_PORT
-        echo (set_color yellow)"Conn: "(set_color normal)"mongo://localhost:$MONGO_PORT/$MONGO_DB"
-        echo (set_color magenta)"Auth Conn: "(set_color normal)"mongo://$MONGO_USER:$MONGO_PASS@localhost:$MONGO_PORT/$MONGO_DB"
-      end
+      __db_mongo
     case "mysql"
       set -l MYSQL_DB my_mysql_database
       set -l MYSQL_USER mysql

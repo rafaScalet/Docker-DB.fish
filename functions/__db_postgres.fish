@@ -4,7 +4,7 @@ function __db_postgres
   if not set -q PG_PORT; set -g PG_PORT 5432; end
   if not set -q PG_DATA; set -g PG_DATA my_postgres_database; end
 
-  if not docker inspect postgres > /dev/null 2>&1
+  if not docker ps -a --format "{{.Names}}" | grep -qw "postgres"
     set -Ux PG_CONN "postgres://$PG_USER:$PG_PASS@localhost:$PG_PORT/$PG_DATA"
 
     docker run\
@@ -23,6 +23,7 @@ function __db_postgres
     echo (set_color red)"Pass: "(set_color normal)$PG_PASS
     echo (set_color green)"Port: "(set_color normal)$PG_PORT
     echo (set_color yellow)"Conn: "(set_color normal)$PG_CONN
+
     return
   end
 
@@ -30,6 +31,7 @@ function __db_postgres
     set -q PG_CONN && set -e PG_CONN
 
     docker stop postgres > /dev/null
+
     echo "Postgres container stopped"
   else
     set -Ux PG_CONN "postgres://$PG_USER:$PG_PASS@localhost:$PG_PORT/$PG_DATA"
