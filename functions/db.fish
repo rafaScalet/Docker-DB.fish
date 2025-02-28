@@ -3,24 +3,24 @@ function db --argument-names database --description "Run/start/stop Docker conta
 
   if not type -q docker
     echo "Docker isn't installed, follow these steps to install:"
-    echo
     echo "$MARKER install docker with "(set_color magenta)"apt, pacman, zypper"(set_color normal)" or "(set_color magenta)"dnf"(set_color normal)
     echo "$MARKER add user to docker group: "(set_color magenta)"sudo usermod -aG docker; and newgrp docker"(set_color normal)
     echo "$MARKER initialize docker service: "(set_color magenta)"sudo systemctl enable --now docker"(set_color normal)
+    echo "$MARKER if you run this command and doesn't work, reboot your system"
     return 1
   end
 
   if not id -nG | grep -qw docker
-    echo "You are not into the docker group, run these to append your user:"
-    echo
-    echo "sudo usermod -aG docker; and newgrp docker"
+    echo "You are not into the docker group, run these to append your user:"\n
+    echo (set_color yellow)"sudo usermod -aG docker; and newgrp docker"(set_color normal)\n
+    echo "if you run this command and doesn't work, reboot your system"
     return 1
   end
 
   if not systemctl is-active --quiet docker
-    echo "Docker service is not enable yet, run these to enable the service in boot:"
-    echo
-    echo "sudo systemctl enable --now docker"
+    echo "Docker service is not enable yet, run these to enable the service in boot:"\n
+    echo (set_color yellow)"sudo systemctl enable --now docker"(set_color normal)\n
+    echo "if you run this command and doesn't work, reboot your system"
     return 1
   end
 
@@ -75,15 +75,11 @@ function db --argument-names database --description "Run/start/stop Docker conta
         echo (set_color yellow)"Conn: "(set_color normal)"mysql://$MYSQL_USER:$MYSQL_PASS@localhost:$MYSQL_PORT/$MYSQL_DB"
         echo (set_color blue)"Root Conn: "(set_color normal)"mysql://root:$MYSQL_ROOT_PASS@localhost:$MYSQL_PORT/$MYSQL_DB"
       end
-    case "" "help" "-h" "--help"
-      echo "Usage: db <database>. Available options:"
-      echo
-      echo "$MARKER postgres"
-      echo "$MARKER maria"
-      echo "$MARKER mongo"
-      echo "$MARKER mysql"
+    case ""
+      __db_help_message
     case "*"
       echo "Unknown database: $database"
+      __db_help_message
       return 1
   end
 end
