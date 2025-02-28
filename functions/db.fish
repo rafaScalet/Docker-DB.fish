@@ -26,45 +26,7 @@ function db --argument-names database --description "Run/start/stop Docker conta
 
   switch $database
     case "postgres"
-      set -l PG_USER postgres
-      set -l PG_PASS docker
-      set -l PG_PORT 5432
-      set -l PG_DB my_postgres_database
-
-      if not docker ps -a --format "{{.Names}}" | grep -q "postgres"
-        docker run --name postgres\
-          -e POSTGRES_PASSWORD=$PG_PASS\
-          -e POSTGRES_USER=$PG_USER\
-          -e POSTGRES_DB=$PG_DB\
-          -p $PG_PORT:5432\
-          -v postgres-data:/var/lib/postgresql/data\
-          -d postgres > /dev/null
-
-        echo "postgres container created:"
-        echo
-        echo (set_color black)"DB: "(set_color normal)$PG_DB
-        echo (set_color cyan)"User: "(set_color normal)$PG_USER
-        echo (set_color red)"Pass: "(set_color normal)$PG_PASS
-        echo (set_color green)"Port: "(set_color normal)$PG_PORT
-        echo (set_color yellow)"Conn: "(set_color normal)"postgres://$PG_USER:$PG_PASS@localhost:$PG_PORT/$PG_DB"
-        return
-      end
-
-      set -l postgres_status (docker inspect --format="{{.State.Running}}" postgres)
-
-      if test "$postgres_status" = "true"
-        docker stop postgres > /dev/null
-        echo "postgres container stopped"
-      else
-        docker start postgres > /dev/null
-        echo "postgres container started:"
-        echo
-        echo (set_color black)"DB: "(set_color normal)$PG_DB
-        echo (set_color cyan)"User: "(set_color normal)$PG_USER
-        echo (set_color red)"Pass: "(set_color normal)$PG_PASS
-        echo (set_color green)"Port: "(set_color normal)$PG_PORT
-        echo (set_color yellow)"Conn: "(set_color normal)"postgres://$PG_USER:$PG_PASS@localhost:$PG_PORT/$PG_DB"
-      end
+      __db_postgres
     case "maria"
       set -l MARIA_DB my_mariadb_database
       set -l MARIA_USER maria
