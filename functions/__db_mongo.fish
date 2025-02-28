@@ -17,8 +17,7 @@ function __db_mongo
       --volume mongo-data:/etc/mongo\
       --detach mongo > /dev/null
 
-    echo "mongo container created:"
-    echo
+    echo "mongo container created:"\n
     echo (set_color magenta)"Db: "(set_color normal)$MONGO_DATA
     echo (set_color cyan)"User: "(set_color normal)$MONGO_USER
     echo (set_color red)"Pass: "(set_color normal)$MONGO_PASS
@@ -42,8 +41,7 @@ function __db_mongo
 
     docker start mongo > /dev/null
 
-    echo "mongo container started:"
-    echo
+    echo "mongo container started:"\n
     echo (set_color magenta)"Db: "(set_color normal)$MONGO_DATA
     echo (set_color cyan)"User: "(set_color normal)$MONGO_USER
     echo (set_color red)"Pass: "(set_color normal)$MONGO_PASS

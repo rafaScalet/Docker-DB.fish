@@ -16,8 +16,7 @@ function __db_postgres
       --volume postgres-data:/var/lib/postgresql/data\
       --detach postgres > /dev/null
 
-    echo "Postgres container created:"
-    echo
+    echo "Postgres container created:"\n
     echo (set_color magenta)"DB: "(set_color normal)$PG_DATA
     echo (set_color cyan)"User: "(set_color normal)$PG_USER
     echo (set_color red)"Pass: "(set_color normal)$PG_PASS
@@ -38,8 +37,7 @@ function __db_postgres
 
     docker start postgres > /dev/null
 
-    echo "Postgres container started:"
-    echo
+    echo "Postgres container started:"\n
     echo (set_color magenta)"DB: "(set_color normal)$PG_DATA
     echo (set_color cyan)"User: "(set_color normal)$PG_USER
     echo (set_color red)"Pass: "(set_color normal)$PG_PASS

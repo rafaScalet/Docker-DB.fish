@@ -6,7 +6,7 @@ function db --argument-names database --description "Run/start/stop Docker conta
     echo "$MARKER install docker with "(set_color magenta)"apt, pacman, zypper"(set_color normal)" or "(set_color magenta)"dnf"(set_color normal)
     echo "$MARKER add user to docker group: "(set_color magenta)"sudo usermod -aG docker; and newgrp docker"(set_color normal)
     echo "$MARKER initialize docker service: "(set_color magenta)"sudo systemctl enable --now docker"(set_color normal)
-    echo "$MARKER if you run this command and doesn't work, reboot your system"
+    echo "$MARKER if you run this commands and doesn't work, reboot your system"
     return 1
   end
 
@@ -32,54 +32,14 @@ function db --argument-names database --description "Run/start/stop Docker conta
     case "mongo"
       __db_mongo
     case "mysql"
-      set -l MYSQL_DB my_mysql_database
-      set -l MYSQL_USER mysql
-      set -l MYSQL_PASS docker
-      set -l MYSQL_ROOT_PASS root
-      set -l MYSQL_PORT 3306
-
-      if not docker ps -a --format "{{.Names}}" | grep -q "mysql"
-        docker run --name mysql\
-          -e MYSQL_USER=$MYSQL_USER\
-          -e MYSQL_PASSWORD=$MYSQL_PASS\
-          -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASS\
-          -e MYSQL_DATABASE=$MYSQL_DB\
-          -p $MYSQL_PORT:3306\
-          -v mysql-data:/var/lib/mysql\
-          -d mysql > /dev/null
-
-        echo "mysql container created:"
-        echo
-        echo (set_color black)"Db: "(set_color normal)$MYSQL_DB
-        echo (set_color cyan)"User: "(set_color normal)$MYSQL_USER
-        echo (set_color red)"Pass: "(set_color normal)$MYSQL_PASS
-        echo (set_color green)"Port: "(set_color normal)$MYSQL_PORT
-        echo (set_color yellow)"Conn: "(set_color normal)"mysql://$MYSQL_USER:$MYSQL_PASS@localhost:$MYSQL_PORT/$MYSQL_DB"
-        echo (set_color blue)"Root Conn: "(set_color normal)"mysql://root:$MYSQL_ROOT_PASS@localhost:$MYSQL_PORT/$MYSQL_DB"
-        return
-      end
-
-      set -l mysql_status (docker inspect --format="{{.State.Running}}" mysql)
-
-      if test "$mysql_status" = "true"
-        docker stop mysql > /dev/null
-        echo "mysql container stopped"
-      else
-        docker start mysql > /dev/null
-        echo "mysql container started:"
-        echo
-        echo (set_color black)"Db: "(set_color normal)$MYSQL_DB
-        echo (set_color cyan)"User: "(set_color normal)$MYSQL_USER
-        echo (set_color red)"Pass: "(set_color normal)$MYSQL_PASS
-        echo (set_color green)"Port: "(set_color normal)$MYSQL_PORT
-        echo (set_color yellow)"Conn: "(set_color normal)"mysql://$MYSQL_USER:$MYSQL_PASS@localhost:$MYSQL_PORT/$MYSQL_DB"
-        echo (set_color blue)"Root Conn: "(set_color normal)"mysql://root:$MYSQL_ROOT_PASS@localhost:$MYSQL_PORT/$MYSQL_DB"
-      end
-    case ""
-      __db_help_message
+      __db_mysql
     case "*"
-      echo "Unknown database: $database"
-      __db_help_message
+      echo "Unknown database $database"
+      echo "Usage: db <database>. Available options:"\n
+      echo "$MARKER postgres"
+      echo "$MARKER maria"
+      echo "$MARKER mongo"
+      echo "$MARKER mysql"
       return 1
   end
 end

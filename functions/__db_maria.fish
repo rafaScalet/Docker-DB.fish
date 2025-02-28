@@ -18,8 +18,7 @@ function __db_maria
       --volume mariadb-data:/var/lib/mysql\
       --detach mariadb > /dev/null
 
-    echo "mariadb container created:"
-    echo
+    echo "mariadb container created:"\n
     echo (set_color magenta)"Db: "(set_color normal)$MARIA_DATA
     echo (set_color cyan)"User: "(set_color normal)$MARIA_USER
     echo (set_color red)"Pass: "(set_color normal)$MARIA_PASS
@@ -43,8 +42,7 @@ function __db_maria
 
     docker start mariadb > /dev/null
 
-    echo "mariadb container started:"
-    echo
+    echo "mariadb container started:"\n
     echo (set_color magenta)"Db: "(set_color normal)$MARIA_DATA
     echo (set_color cyan)"User: "(set_color normal)$MARIA_USER
     echo (set_color red)"Pass: "(set_color normal)$MARIA_PASS
